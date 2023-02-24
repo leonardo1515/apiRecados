@@ -1,0 +1,35 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userRoutes = void 0;
+const express_1 = require("express");
+const user_controller_1 = require("../controllers/user.controller");
+const messages_controller_1 = require("../controllers/messages.controller");
+const user_validator_middleware_1 = require("../middlewares/midlleware-user/user-validator.middleware");
+const email_user_validator_middleware_1 = require("../middlewares/midlleware-user/email-user-validator.middleware");
+const loged_validator_middleware_1 = require("../middlewares/midlleware-user/loged-validator.middleware");
+const update_validator_medlleware_1 = require("../middlewares/midlleware-user/update-validator.medlleware");
+const delete_validator_midlleware_1 = require("../middlewares/midlleware-user/delete-validator.midlleware");
+const filter_validatro_midlleware_1 = require("../middlewares/midlleware-user/filter-validatro.midlleware");
+const id_validator_midlleware_1 = require("../middlewares/midlleware-user/id-validator.midlleware");
+const create_message_validator_midlleware_1 = require("../middlewares/midlleware-messages/create-message-validator.midlleware");
+const delete_message_validator_midlleware_1 = require("../middlewares/midlleware-messages/delete-message-validator.midlleware");
+const get_message_validator_midlleware_1 = require("../middlewares/midlleware-messages/get-message-validator.midlleware");
+const update_validator_medlleware_2 = require("../middlewares/midlleware-messages/update-validator.medlleware");
+const userRoutes = () => {
+    const app = (0, express_1.Router)();
+    app.get("/", new user_controller_1.UserController().getAll);
+    app.get("/filter", filter_validatro_midlleware_1.FilterValidatorMiddleware.filterValidator, new user_controller_1.UserController().filter);
+    app.post("/log", loged_validator_middleware_1.LogarValidatorMiddleware.logValidator, new user_controller_1.UserController().log);
+    app.put("/:id/logoff", id_validator_midlleware_1.GetByIdValidatorMiddleware.idValidator, new user_controller_1.UserController().logoff);
+    app.post("/create", user_validator_middleware_1.UserValidatorMiddleware.useValidator, email_user_validator_middleware_1.EmailValidatorMiddleware.emailAlreadyExisting, new user_controller_1.UserController().create);
+    app.put("/:id/update", id_validator_midlleware_1.GetByIdValidatorMiddleware.idValidator, update_validator_medlleware_1.UpdateValidatorMiddleware.updateValidator, new user_controller_1.UserController().update);
+    app.delete("/:id/delete", delete_validator_midlleware_1.DeleteValidatorMiddleware.deleteValidator, new user_controller_1.UserController().delete);
+    // messages
+    app.get("/:id/messages", id_validator_midlleware_1.GetByIdValidatorMiddleware.idValidator, new messages_controller_1.MessagesController().getAllMessage);
+    app.get("/:id/messages/:idMessage", id_validator_midlleware_1.GetByIdValidatorMiddleware.idValidator, get_message_validator_midlleware_1.GetMessageMidllewareValidator.getOneMessageValidator, new messages_controller_1.MessagesController().getMessage);
+    app.post("/:id/messages/create", id_validator_midlleware_1.GetByIdValidatorMiddleware.idValidator, create_message_validator_midlleware_1.CreateMessagMidllewareValidator.messageValidator, new messages_controller_1.MessagesController().createMessage);
+    app.put("/:id/messages/:idMessage/update", update_validator_medlleware_2.UpdateMessageValidatorMiddleware.updateMessageValidator, id_validator_midlleware_1.GetByIdValidatorMiddleware.idValidator, get_message_validator_midlleware_1.GetMessageMidllewareValidator.getOneMessageValidator, new messages_controller_1.MessagesController().update);
+    app.delete("/:id/messages/:idMessage/delete", delete_message_validator_midlleware_1.DeleteMessageMidllewareValidator.deleteMessageValidator, id_validator_midlleware_1.GetByIdValidatorMiddleware.idValidator, get_message_validator_midlleware_1.GetMessageMidllewareValidator.getOneMessageValidator, new messages_controller_1.MessagesController().delete);
+    return app;
+};
+exports.userRoutes = userRoutes;
